@@ -2,6 +2,8 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/db";
+import { category } from "@/db/schema";
+import { defaultCategoryRows } from "@/lib/default-categories";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -9,6 +11,16 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        // seed หมวดตั้งต้นให้ผู้ใช้ใหม่
+        after: async (user) => {
+          await db.insert(category).values(defaultCategoryRows(user.id));
+        },
+      },
+    },
   },
   // เปิด GitHub เมื่อใส่ credentials ใน env แล้วเท่านั้น
   socialProviders: process.env.GITHUB_CLIENT_ID

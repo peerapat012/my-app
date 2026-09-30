@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-d78bccbe-1b3e-4d79-8bc2-14845e2283e4/styles.css">
+<script src="_ds/modernist-d78bccbe-1b3e-4d79-8bc2-14845e2283e4/_ds_bundle.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>body{margin:0;background:#e6ebf2;color:#1e2a3d;font-family:var(--font-body),'IBM Plex Sans Thai',sans-serif}a{color:#2f6fd0}a:hover{color:#1f55a8}*{box-sizing:border-box}input,select{border-radius:10px!important}</style>
+</helmet>
+<div style="max-width:1120px;margin:0 auto;padding:28px 20px 48px;font-family:var(--font-body),'IBM Plex Sans Thai',sans-serif">
+  <header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-bottom:20px;margin-bottom:24px;border-bottom:1px solid #b9c3d1">
+    <h1 style="margin:0;font-size:32px;font-weight:700">บัญชีของฉัน</h1>
+    <div style="display:flex;align-items:center;gap:6px;background:#fff;border-radius:999px;padding:4px;box-shadow:0 2px 8px rgba(30,42,61,.08)">
+      <button onClick="{{ prevMonth }}" style="border:0;background:transparent;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px" style-hover="background:#eef2f8">←</button>
+      <span style="font-weight:600;min-width:150px;text-align:center">{{ monthLabel }}</span>
+      <button onClick="{{ nextMonth }}" style="border:0;background:transparent;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px" style-hover="background:#eef2f8">→</button>
+    </div>
+  </header>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:20px">
+    
+
+    <main style="min-width:0;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <div style="display:flex;background:#d7dfea;border-radius:999px;padding:4px">
+          <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.go }}" style="{{ t.style }}">{{ t.label }}</button></sc-for>
+        </div>
+        <button onClick="{{ openAdd }}" style="border:0;background:#2f6fd0;color:#fff;font-family:inherit;font-weight:600;font-size:15px;padding:12px 22px;border-radius:999px;cursor:pointer;white-space:nowrap;box-shadow:0 4px 12px rgba(47,111,208,.3)" style-hover="background:#1f55a8">+ เพิ่มรายการ</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px">
+        <div style="background:#f7f9fc;border-radius:14px;padding:18px 20px;box-shadow:0 2px 8px rgba(30,42,61,.08)"><div style="font-weight:700">รายรับ</div><div style="font-size:13px;color:#5b6778">{{ monthLabel }}</div><div style="font-size:30px;font-weight:700;color:#239a52;margin-top:6px">{{ incomeFmt }}</div></div>
+        <div style="background:#f7f9fc;border-radius:14px;padding:18px 20px;box-shadow:0 2px 8px rgba(30,42,61,.08)"><div style="font-weight:700">รายจ่าย</div><div style="font-size:13px;color:#5b6778">{{ monthLabel }}</div><div style="font-size:30px;font-weight:700;color:#d33a3a;margin-top:6px">{{ expenseFmt }}</div></div>
+        <div style="background:#f7f9fc;border-radius:14px;padding:18px 20px;box-shadow:0 2px 8px rgba(30,42,61,.08)"><div style="font-weight:700">คงเหลือ</div><div style="font-size:13px;color:#5b6778">ใช้ไป {{ spentPct }} ของรายรับ</div><div style="font-size:30px;font-weight:700;margin-top:6px">{{ balanceFmt }}</div><div style="height:8px;background:#e3e8f0;border-radius:99px;margin-top:10px;overflow:hidden"><div style="{{ spentBar }}"></div></div></div>
+      </div>
+
+      <sc-if value="{{ isSummary }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+          <section style="background:#f7f9fc;border-radius:14px;padding:18px 20px;box-shadow:0 2px 8px rgba(30,42,61,.08)">
+            <h3 style="margin:0 0 14px;font-size:16px">รายจ่ายตามหมวด</h3>
+            <sc-if value="{{ noExpense }}"><p style="color:#5b6778">ยังไม่มีรายจ่ายเดือนนี้</p></sc-if>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ catBreak }}" as="c" hint-placeholder-count="4">
+                <div>
+                  <div style="display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:5px"><span style="min-width:0">{{ c.name }}</span><span style="white-space:nowrap;flex:none">{{ c.amt }} <span style="color:#5b6778">· {{ c.pct }}</span></span></div>
+                  <div style="height:8px;background:#e3e8f0;border-radius:99px;overflow:hidden"><div style="{{ c.bar }}"></div></div>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+          <section style="background:#f7f9fc;border-radius:14px;padding:18px 20px;box-shadow:0 2px 8px rgba(30,42,61,.08)">
+            <h3 style="margin:0 0 8px;font-size:16px">รายการล่าสุด</h3>
+            <sc-for list="{{ recent }}" as="r" hint-placeholder-count="5">
+              <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #e3e8f0">
+                <div style="min-width:0;flex:1"><div>{{ r.note }}</div><div style="font-size:12px;color:#5b6778">{{ r.date }} · {{ r.cat }}</div></div>
+                <div style="{{ r.amtStyle }}">{{ r.amt }}</div>
+              </div>
+            </sc-for>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isList }}">
+        <section style="background:#f7f9fc;border-radius:14px;padding:12px 20px;box-shadow:0 2px 8px rgba(30,42,61,.08)">
+          <sc-if value="{{ noTx }}"><p style="color:#5b6778">ยังไม่มีรายการเดือนนี้</p></sc-if>
+          <sc-for list="{{ allTx }}" as="r">
+            <div style="display:grid;grid-template-columns:64px minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #e3e8f0">
+              <span style="font-size:13px;color:#5b6778">{{ r.date }}</span>
+              <div style="min-width:0"><div>{{ r.note }}</div><span style="display:inline-block;margin-top:3px;font-size:12px;background:#e3ebf8;color:#22345a;padding:2px 10px;border-radius:99px">{{ r.cat }}</span></div>
+              <span style="{{ r.amtStyle }}">{{ r.amt }}</span>
+              <button onClick="{{ r.del }}" aria-label="ลบ" style="border:0;background:transparent;width:32px;height:32px;border-radius:50%;cursor:pointer;color:#5b6778" style-hover="background:#fde8e8;color:#d33a3a">✕</button>
+            </div>
+          </sc-for>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ isCats }}">
+        <section style="background:#f7f9fc;border-radius:14px;padding:18px 20px;box-shadow:0 2px 8px rgba(30,42,61,.08);display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <input class="input" value="{{ newCat }}" onChange="{{ setNewCat }}" placeholder="ชื่อหมวดใหม่ เช่น สัตว์เลี้ยง" style="flex:1;min-width:180px">
+            <div style="display:flex;background:#e3e8f0;border-radius:999px;padding:3px"><sc-for list="{{ newCatTypes }}" as="t"><button style="{{ t.style }}" onClick="{{ t.go }}">{{ t.label }}</button></sc-for></div>
+            <button onClick="{{ addCat }}" style="border:0;background:#2f6fd0;color:#fff;font-family:inherit;font-weight:600;padding:10px 18px;border-radius:999px;cursor:pointer" style-hover="background:#1f55a8">เพิ่มหมวด</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px">
+            <sc-for list="{{ catGroups }}" as="g" hint-placeholder-count="2">
+              <div>
+                <h3 style="margin:0 0 8px;font-size:16px">{{ g.title }}</h3>
+                <sc-for list="{{ g.items }}" as="c">
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #e3e8f0">
+                    <span>{{ c.name }}</span>
+                    <span style="display:flex;gap:8px;align-items:center"><span style="font-size:13px;color:#5b6778">{{ c.amt }}</span><button onClick="{{ c.del }}" aria-label="ลบหมวด" style="border:0;background:transparent;width:28px;height:28px;border-radius:50%;cursor:pointer;color:#5b6778" style-hover="background:#fde8e8;color:#d33a3a">✕</button></span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+    </main>
+  </div>
+</div>
+
+<sc-if value="{{ showAdd }}">
+  <div style="position:fixed;inset:0;background:rgba(20,30,50,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10">
+    <div style="width:100%;max-width:420px;background:#fff;border-radius:18px;padding:24px;box-shadow:0 20px 50px rgba(20,30,50,.3);display:flex;flex-direction:column;gap:14px">
+      <h2 style="margin:0;font-size:20px">เพิ่มรายการ</h2>
+      <div style="display:flex;background:#e3e8f0;border-radius:999px;padding:3px"><sc-for list="{{ typeOpts }}" as="t"><button style="{{ t.style }}" onClick="{{ t.go }}">{{ t.label }}</button></sc-for></div>
+      <div class="field" style="margin:0"><label>จำนวนเงิน (บาท)</label><input class="input" type="number" inputMode="decimal" value="{{ fAmt }}" onChange="{{ setAmt }}" placeholder="0"></div>
+      <div class="field" style="margin:0"><label>หมวดหมู่</label><select class="input" value="{{ fCat }}" onChange="{{ setCat }}"><sc-for list="{{ formCats }}" as="c"><option value="{{ c }}">{{ c }}</option></sc-for></select></div>
+      <div class="field" style="margin:0"><label>บันทึก</label><input class="input" value="{{ fNote }}" onChange="{{ setNote }}" placeholder="เช่น ข้าวเที่ยง"></div>
+      <div class="field" style="margin:0"><label>วันที่</label><input class="input" type="date" value="{{ fDate }}" onChange="{{ setDate }}"></div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:6px">
+        <button onClick="{{ closeAdd }}" style="border:0;background:#eef2f8;font-family:inherit;padding:10px 18px;border-radius:999px;cursor:pointer">ยกเลิก</button>
+        <button onClick="{{ save }}" style="border:0;background:#2f6fd0;color:#fff;font-family:inherit;font-weight:600;padding:10px 22px;border-radius:999px;cursor:pointer" style-hover="background:#1f55a8">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY='money-tracker-v1';
+const today=()=>new Date().toISOString().slice(0,10);
+const DEF={cats:{expense:['อาหาร','เดินทาง','ที่พัก','ช้อปปิ้ง','บันเทิง','สุขภาพ','บิล/ค่าน้ำไฟ'],income:['เงินเดือน','ฟรีแลนซ์','อื่นๆ']},tx:(()=>{const m=today().slice(0,8);return[
+{id:1,type:'income',amt:32000,cat:'เงินเดือน',note:'เงินเดือน',date:m+'01'},
+{id:2,type:'expense',amt:8500,cat:'ที่พัก',note:'ค่าห้อง',date:m+'02'},
+{id:3,type:'expense',amt:120,cat:'อาหาร',note:'ข้าวมันไก่ + กาแฟ',date:m+'05'},
+{id:4,type:'expense',amt:45,cat:'เดินทาง',note:'BTS',date:m+'05'},
+{id:5,type:'expense',amt:1290,cat:'ช้อปปิ้ง',note:'รองเท้า',date:m+'12'},
+{id:6,type:'expense',amt:780,cat:'บิล/ค่าน้ำไฟ',note:'ค่าไฟ',date:m+'15'},
+{id:7,type:'expense',amt:350,cat:'บันเทิง',note:'ดูหนัง',date:m+'18'},
+{id:8,type:'income',amt:4500,cat:'ฟรีแลนซ์',note:'งานออกแบบ',date:m+'20'}]})()};
+const fmt=n=>'฿'+n.toLocaleString('th-TH',{maximumFractionDigits:2});
+const pill={flex:1,border:0,fontFamily:'inherit',padding:'8px 16px',borderRadius:999,cursor:'pointer',background:'transparent',color:'#1e2a3d'};
+const pillOn={...pill,background:'#fff',fontWeight:600,boxShadow:'0 1px 4px rgba(30,42,61,.15)'};
+const navB={display:'block',width:'100%',textAlign:'left',border:0,fontFamily:'inherit',fontSize:15,padding:'12px 20px',cursor:'pointer',background:'transparent',color:'#dfe6f2'};
+const navOn={...navB,background:'#2f6fd0',color:'#fff',fontWeight:600};
+const BARS=['#2f6fd0','#239a52','#7b52c4','#e08a2c','#d33a3a','#2aa3b8','#5b6778'];
+class Component extends DCLogic {
+  constructor(p){super(p);let d;try{d=JSON.parse(localStorage.getItem(KEY))}catch(e){}d=d||DEF;
+    const n=new Date();this.state={...d,y:n.getFullYear(),m:n.getMonth(),tab:'sum',showAdd:false,fType:'expense',fAmt:'',fCat:d.cats.expense[0],fNote:'',fDate:today(),newCat:'',newCatType:'expense'};}
+  persist(){localStorage.setItem(KEY,JSON.stringify({cats:this.state.cats,tx:this.state.tx}))}
+  upd(o){this.setState(o,()=>this.persist())}
+  renderVals(){const s=this.state;const ym=`${s.y}-${String(s.m+1).padStart(2,'0')}`;
+    const tx=s.tx.filter(t=>t.date.startsWith(ym)).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+    const inc=tx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amt,0),exp=tx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amt,0);
+    const byCat={};tx.forEach(t=>byCat[t.cat]=(byCat[t.cat]||0)+t.amt);
+    const row=t=>({note:t.note||t.cat,cat:t.cat,date:new Date(t.date).toLocaleDateString('th-TH',{day:'numeric',month:'short'}),amt:(t.type==='income'?'+':'−')+fmt(t.amt),amtStyle:{fontWeight:600,whiteSpace:'nowrap',color:t.type==='income'?'#239a52':'#d33a3a'},del:()=>this.upd({tx:s.tx.filter(x=>x.id!==t.id)})});
+    const cb=Object.entries(byCat).filter(([c])=>tx.some(t=>t.cat===c&&t.type==='expense')).sort((a,b)=>b[1]-a[1]);
+    const mv=d=>()=>{let m=s.m+d,y=s.y;if(m<0){m=11;y--}if(m>11){m=0;y++}this.setState({m,y})};
+    const seg=(opts,cur,key,extra,on=pillOn,off=pill)=>opts.map(([v,l])=>({label:l,style:cur===v?on:off,go:()=>this.setState({[key]:v,...(extra?extra(v):{})})}));
+    const sp=inc?Math.min(100,exp/inc*100):0;
+    return {monthLabel:new Date(s.y,s.m,1).toLocaleDateString('th-TH',{month:'long',year:'numeric'}),prevMonth:mv(-1),nextMonth:mv(1),
+      tabs:seg([['sum','ภาพรวม'],['list','รายการ'],['cats','หมวดหมู่']],s.tab,'tab',null,{...pillOn,flex:'none',padding:'8px 20px'},{...pill,flex:'none',padding:'8px 20px'}),
+      isSummary:s.tab==='sum',isList:s.tab==='list',isCats:s.tab==='cats',
+      incomeFmt:fmt(inc),expenseFmt:fmt(exp),balanceFmt:(inc-exp<0?'−':'')+fmt(Math.abs(inc-exp)),
+      spentPct:Math.round(sp)+'%',spentBar:{height:'100%',width:sp+'%',background:sp>90?'#d33a3a':'#2f6fd0',borderRadius:99},
+      noExpense:cb.length===0,catBreak:cb.map(([c,a],i)=>({name:c,amt:fmt(a),pct:Math.round(a/exp*100)+'%',bar:{height:'100%',width:(a/exp*100)+'%',background:BARS[i%BARS.length],borderRadius:99}})),
+      recent:tx.slice(0,6).map(row),allTx:tx.map(row),noTx:tx.length===0,
+      catGroups:[['expense','หมวดรายจ่าย'],['income','หมวดรายรับ']].map(([k,t])=>({title:t,items:s.cats[k].map(c=>({name:c,amt:byCat[c]?fmt(byCat[c]):'—',del:()=>this.upd({cats:{...s.cats,[k]:s.cats[k].filter(x=>x!==c)}})}))})),
+      newCat:s.newCat,setNewCat:e=>this.setState({newCat:e.target.value}),
+      newCatTypes:seg([['expense','รายจ่าย'],['income','รายรับ']],s.newCatType,'newCatType'),
+      addCat:()=>{const n=s.newCat.trim();if(!n||s.cats[s.newCatType].includes(n))return;this.upd({newCat:'',cats:{...s.cats,[s.newCatType]:[...s.cats[s.newCatType],n]}})},
+      showAdd:s.showAdd,openAdd:()=>this.setState({showAdd:true,fAmt:'',fNote:'',fDate:today()}),closeAdd:()=>this.setState({showAdd:false}),
+      typeOpts:seg([['expense','รายจ่าย'],['income','รายรับ']],s.fType,'fType',v=>({fCat:s.cats[v][0]})),
+      fAmt:s.fAmt,fCat:s.fCat,fNote:s.fNote,fDate:s.fDate,formCats:s.cats[s.fType],
+      setAmt:e=>this.setState({fAmt:e.target.value}),setCat:e=>this.setState({fCat:e.target.value}),setNote:e=>this.setState({fNote:e.target.value}),setDate:e=>this.setState({fDate:e.target.value}),
+      save:()=>{const a=parseFloat(s.fAmt);if(!(a>0))return;this.upd({showAdd:false,tx:[...s.tx,{id:Date.now(),type:s.fType,amt:a,cat:s.fCat||s.cats[s.fType][0],note:s.fNote,date:s.fDate}]})}};
+  }
+}
+</script>
+</body>
+</html>

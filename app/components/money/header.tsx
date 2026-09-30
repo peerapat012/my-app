@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from "./theme-toggle";
 import { useSetParams } from "./url";
 
 const navBtn =
@@ -37,6 +38,7 @@ export function Header({ user, month }: { user: { name: string; email: string };
             <ChevronRightIcon className="size-4" />
           </button>
         </div>
+        <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger
             aria-label="เมนูผู้ใช้"
